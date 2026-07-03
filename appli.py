@@ -18,8 +18,8 @@ if st.button("Générer le Quiz"):
             # --- LE MOTEUR IA ---
             genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
             
-            # Retour au nom épuré : la bibliothèque gère le reste
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            # Passage au modèle Gemini 2.0 pour corriger l'erreur de modèle introuvable
+            model = genai.GenerativeModel('gemini-2.0-flash')
             
             prompt = f"""
             Agis comme un créateur de quiz expert. 
