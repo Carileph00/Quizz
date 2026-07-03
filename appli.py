@@ -12,12 +12,14 @@ theme_quiz = st.text_input("Votre thème (ex: Le fromage Maroilles, le manga Tor
 if st.button("Générer le Quiz"):
     
     if theme_quiz:
-        # Animation de chargement pendant que l'IA travaille
+        # Animation de chargement
         with st.spinner("Création de votre quiz en cours..."):
             
             # --- LE MOTEUR IA ---
             genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            
+            # Ajout du préfixe explicite 'models/' pour corriger l'erreur NotFound
+            model = genai.GenerativeModel('models/gemini-1.5-flash')
             
             prompt = f"""
             Agis comme un créateur de quiz expert. 
@@ -28,7 +30,6 @@ if st.button("Générer le Quiz"):
             3. Ajoute une courte explication précise pour chaque réponse.
             """
             
-            # Requête simplifiée et ultra-rapide
             reponse = model.generate_content(prompt)
             
             # --- AFFICHAGE DU RÉSULTAT ---
