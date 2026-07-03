@@ -13,7 +13,7 @@ if st.button("Générer le Quiz"):
     
     if theme_quiz:
         # Animation de chargement pendant que l'IA travaille
-        with st.spinner("Recherche des sources et création du quiz (cela prend environ 15 secondes)..."):
+        with st.spinner("Création de votre quiz en cours..."):
             
             # --- LE MOTEUR IA ---
             genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
@@ -25,14 +25,11 @@ if st.button("Générer le Quiz"):
             Contraintes :
             1. Difficulté strictement croissante (1 = facile, 20 = expert).
             2. Fournis la réponse correcte.
-            3. Vérifie via le web et ajoute une courte explication sourcée pour chaque réponse.
+            3. Ajoute une courte explication précise pour chaque réponse.
             """
             
-            # Requête à Gemini avec la recherche Google activée
-            reponse = model.generate_content(
-                prompt,
-                tools=['google_search']
-            )
+            # Requête simplifiée et ultra-rapide
+            reponse = model.generate_content(prompt)
             
             # --- AFFICHAGE DU RÉSULTAT ---
             st.success("Quiz généré avec succès !")
