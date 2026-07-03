@@ -18,23 +18,15 @@ if st.button("Générer le Quiz"):
         with st.spinner("Recherche des sources et création du quiz (cela prend environ 15 secondes)..."):
             
             # --- LE MOTEUR IA ---
-            genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-
             model = genai.GenerativeModel('gemini-1.5-flash')
-            
-            prompt = f"""
-            Agis comme un créateur de quiz expert. 
-            Génère 20 questions sur le thème suivant : {theme_quiz}.
-            Contraintes :
-            1. Difficulté strictement croissante (1 = facile, 20 = expert).
-            2. Fournis la réponse correcte.
-            3. Vérifie via le web et ajoute une courte explication sourcée pour chaque réponse.
-            """
-            
-            reponse = model.generate_content(
-                prompt,
-                tools=[{"google_search_retrieval": {}}]
-            )
+
+# ... plus bas ...
+
+reponse = model.generate_content(
+    prompt,
+    tools=['google_search'] # La nouvelle syntaxe simplifiée
+)
+
             
             # --- AFFICHAGE DU RÉSULTAT ---
             st.success("Quiz généré avec succès !")
