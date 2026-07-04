@@ -23,7 +23,6 @@ if st.button("Générer les 20 questions"):
             try:
                 client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
                 
-                                # Le prompt repensé avec la contrainte stricte de langue
                 prompt = f"""
                 Agis comme un créateur de quiz expert. 
                 Génère 20 questions de QCM EN FRANÇAIS sur le thème : {theme}. 
@@ -36,18 +35,17 @@ if st.button("Générer les 20 questions"):
                 Réponds EXCLUSIVEMENT au format JSON strict comme cet exemple :
                 [
                     {{
-                        "question": "Quel est l'animal de compagnie de Toriko ?", 
-                        "options": ["Terry Cloth", "Kiss", "Quinn", "Kruk"], 
-                        "reponse": "Terry Cloth", 
-                        "explication": "Terry est un Loup de Bataille cloné..."
+                        "question": "Exemple de question ?", 
+                        "options": ["Choix 1", "Choix 2", "Choix 3", "Choix 4"], 
+                        "reponse": "Choix 1", 
+                        "explication": "Explication de la réponse..."
                     }}
                 ]
                 """
-
                 
-                                reponse = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
+                reponse = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
                 
-                # Technique infaillible pour cibler uniquement le tableau JSON, même si l'IA bavarde
+                # Technique infaillible pour cibler uniquement le tableau JSON
                 texte = reponse.text
                 debut = texte.find('[')
                 fin = texte.rfind(']') + 1
@@ -57,7 +55,6 @@ if st.button("Générer les 20 questions"):
                     st.session_state.quiz_data = json.loads(texte_json)
                 else:
                     st.error("L'IA n'a pas respecté le format demandé. Veuillez cliquer à nouveau sur le bouton.")
-
                 
             except Exception as e:
                 st.error(f"Une erreur est survenue lors de la génération : {e}")
@@ -98,4 +95,4 @@ if st.session_state.quiz_data:
             st.info(res["exp"])
             
         # Ligne de séparation pour rendre la lecture plus aérée sur téléphone
-        st.divider() 
+        st.divider()
