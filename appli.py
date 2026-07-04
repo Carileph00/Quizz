@@ -23,14 +23,15 @@ if st.button("Générer les 20 questions"):
             try:
                 client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
                 
-                # Le prompt repensé pour éviter le bug des réponses fausses
+                                # Le prompt repensé avec la contrainte stricte de langue
                 prompt = f"""
                 Agis comme un créateur de quiz expert. 
-                Génère 20 questions de QCM sur le thème : {theme}. 
+                Génère 20 questions de QCM EN FRANÇAIS sur le thème : {theme}. 
                 Contraintes IMPÉRATIVES :
                 1. Difficulté strictement croissante (1 = facile, 20 = expert).
                 2. Ne mets AUCUNE lettre (A, B, C, D) devant les choix de réponses.
                 3. La valeur "reponse" DOIT être strictement identique au texte de la bonne option.
+                4. TOUT le contenu généré (questions, options, reponse et explication) DOIT OBLIGATOIREMENT être rédigé en français.
                 
                 Réponds EXCLUSIVEMENT au format JSON strict comme cet exemple :
                 [
@@ -42,6 +43,7 @@ if st.button("Générer les 20 questions"):
                     }}
                 ]
                 """
+
                 
                 reponse = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
                 
