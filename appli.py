@@ -45,11 +45,19 @@ if st.button("Générer les 20 questions"):
                 """
 
                 
-                reponse = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
+                                reponse = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
                 
-                # Nettoyage du texte généré pour extraire le JSON pur
-                texte_json = reponse.text.replace("```json", "").replace("```", "").strip()
-                st.session_state.quiz_data = json.loads(texte_json)
+                # Technique infaillible pour cibler uniquement le tableau JSON, même si l'IA bavarde
+                texte = reponse.text
+                debut = texte.find('[')
+                fin = texte.rfind(']') + 1
+                
+                if debut != -1 and fin != 0:
+                    texte_json = texte[debut:fin]
+                    st.session_state.quiz_data = json.loads(texte_json)
+                else:
+                    st.error("L'IA n'a pas respecté le format demandé. Veuillez cliquer à nouveau sur le bouton.")
+
                 
             except Exception as e:
                 st.error(f"Une erreur est survenue lors de la génération : {e}")
