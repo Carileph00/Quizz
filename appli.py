@@ -30,7 +30,7 @@ if st.button("Générer le Quiz"):
                 
                 # Nouvelle syntaxe pour générer le contenu
                 reponse = client.models.generate_content(
-                    model='gemini-2.0-flash',
+                    model='gemini-2.5-flash',
                     contents=prompt,
                 )
                 
