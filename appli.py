@@ -1,45 +1,39 @@
 import streamlit as st
-from google import genai  # Utilisation de la nouvelle bibliothèque officielle 2026
+import json
+from google import genai
 
-# --- CONFIGURATION DE L'INTERFACE ---
-st.title("🧠 Générateur de Quiz Expert")
-st.write("Saisissez un thème pour générer 10 questions de difficulté croissante.")
+st.title("🧠 Quiz Interactif Expert")
 
-# Barre de recherche
-theme_quiz = st.text_input("Votre thème (ex: Le fromage Maroilles, le manga Toriko...) :")
+if "quiz_data" not in st.session_state:
+    st.session_state.quiz_data = None
 
-# Bouton pour lancer la génération
-if st.button("Générer le Quiz"):
+theme = st.text_input("Saisissez votre thème :")
+
+if st.button("Générer le Quiz Interactif"):
+    client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
     
-    if theme_quiz:
-        # Animation de chargement
-        with st.spinner("Création de votre quiz en cours..."):
-            
-            try:
-                # Nouvelle méthode d'initialisation propre à 2026
-                client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
-                
-                prompt = f"""
-                Agis comme un créateur de quiz expert. 
-                Génère 10 questions sur le thème suivant : {theme_quiz}.
-                Contraintes :
-                1. Difficulté strictement croissante (1 = facile, 10 = expert).
-                2. Fournis la réponse correcte.
-                3. Ajoute une courte explication précise pour chaque réponse.
-                """
-                
-                # Nouvelle syntaxe pour générer le contenu
-                reponse = client.models.generate_content(
-                    model='gemini-2.5-flash',
-                    contents=prompt,
-                )
-                
-                # --- AFFICHAGE DU RÉSULTAT ---
-                st.success("Quiz généré avec succès !")
-                st.markdown(reponse.text)
-                
-            except Exception as e:
-                st.error(f"Une erreur est survenue avec l'API : {e}")
-            
-    else:
-        st.warning("Veuillez entrer un thème avant de générer le quiz.")
+    prompt = f"""
+    Génère 5 questions de QCM sur {theme}. 
+    Réponds EXCLUSIVEMENT au format JSON comme ceci :
+    [
+        {{"question": "...", "options": ["A", "B", "C", "D"], "reponse": "A", "explication": "..."}}
+    ]
+    """
+    
+    reponse = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
+    st.session_state.quiz_data = json.loads(reponse.text.replace("```json", "").replace("```", ""))
+
+# Affichage du quiz interactif
+if st.session_state.quiz_data:
+    for i, item in enumerate(st.session_state.quiz_data):
+        st.subheader(f"Q{i+1}: {item['question']}")
+        
+        # On crée un groupe de boutons pour chaque question
+        choix = st.radio(f"Réponse {i+1}", item['options'], key=f"q{i}")
+        
+        if st.button(f"Valider Q{i+1}", key=f"btn{i}"):
+            if choix == item['reponse']:
+                st.success("Correct !")
+            else:
+                st.error(f"Faux. La bonne réponse était : {item['reponse']}")
+            st.info(item['explication'])
