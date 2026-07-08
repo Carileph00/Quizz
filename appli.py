@@ -2,7 +2,7 @@ import streamlit as st
 import json
 from google import genai
 
-st.title("🧠 Quiz Interactif Expert")
+st.title("Quipro-Quizz")
 
 # Initialisation de la mémoire
 if "quiz_data" not in st.session_state:
